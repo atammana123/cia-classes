@@ -51,7 +51,6 @@ def send_notification(class_date):
     msg['From'] = EMAIL_ADDRESS
     msg['To'] = EMAIL_ADDRESS
 
-    # HTML Body with Hyperlink and the specific class date
     html_content = f"""
     <html>
         <body>
@@ -60,13 +59,14 @@ def send_notification(class_date):
         </body>
     </html>
     """
-    
     msg.add_alternative(html_content, subtype='html')
 
-    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-        smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
-        smtp.send_message(msg)
-    print("Email sent successfully.")
-
-if __name__ == "__main__":
-    check_availability()
+    # UPDATED FOR YAHOO:
+    # Yahoo uses port 465 with SSL
+    try:
+        with smtplib.SMTP_SSL('smtp.mail.yahoo.com', 465) as smtp:
+            smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+            smtp.send_message(msg)
+        print("Email sent successfully via Yahoo.")
+    except Exception as e:
+        print(f"SMTP Error: {e}")
