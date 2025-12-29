@@ -2,9 +2,8 @@ name: Daily Class Check
 
 on:
   schedule:
-    # This runs at 13:00 UTC (9:00 AM EST) every day
     - cron: '0 13 * * *'
-  workflow_dispatch: # Allows you to run it manually for testing
+  workflow_dispatch:
 
 jobs:
   build:
@@ -23,6 +22,7 @@ jobs:
 
       - name: Run script
         env:
-          EMAIL_USER: ${{ secrets.EMAIL_USER }}
-          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+          # Mapping your GitHub secrets to the environment variables
+          EMAIL: ${{ secrets.EMAIL }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
         run: python scraper.py
