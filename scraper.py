@@ -11,7 +11,7 @@ EMAIL_ADDRESS = os.environ.get('EMAIL')
 EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD')
 
 # The dates we already know about (to be ignored)
-KNOWN_DATES = ["1/30/2026", "4/18/2026"]
+KNOWN_DATES = ["1/30/2026"]
 
 def check_availability():
     print("Searching for NEW Sauce Class dates...")
