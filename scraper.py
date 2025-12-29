@@ -11,7 +11,7 @@ EMAIL_ADDRESS = os.environ.get('EMAIL')
 EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD')
 
 # For testing: I removed 4/18/2026 so it triggers an email immediately
-KNOWN_DATES = ["1/30/2026"] 
+KNOWN_DATES = ["1/30/2026", "4/18/2026"]
 
 def check_availability():
     print(f"DEBUG: Starting scraper. Looking for: Classic and Contemporary Sauces (Copia)")
