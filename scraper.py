@@ -7,43 +7,43 @@ import re
 
 # --- CONFIGURATION ---
 URL = "https://register.culinary.edu/searchResults.cfm?facID=1&sorter=sch.schDateStart&sorter2=c.couTitle"
+# Updated to match your new secret names
 EMAIL_ADDRESS = os.environ.get('EMAIL')
 EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD')
 
-# The dates we already know about (to be ignored)
-KNOWN_DATES = ["1/30/2026"]
+# For testing: I removed 4/18/2026 so it triggers an email immediately
+KNOWN_DATES = ["1/30/2026"] 
 
 def check_availability():
-    print("Searching for NEW Sauce Class dates...")
+    print(f"DEBUG: Starting scraper. Looking for: Classic and Contemporary Sauces (Copia)")
+    
     try:
-        headers = {'User-Agent': 'Mozilla/5.0'}
+        headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'}
+        print("DEBUG: Fetching URL...")
         response = requests.get(URL, headers=headers, timeout=15)
-        response.raise_for_status()
+        print(f"DEBUG: Response Status: {response.status_code}")
         
         soup = BeautifulSoup(response.text, 'html.parser')
         rows = soup.find_all('tr')
-        
+        print(f"DEBUG: Found {len(rows)} table rows.")
+
         for row in rows:
             row_text = row.get_text()
-            
-            # 1. Check if it's the right class and location
             if "Classic and Contemporary Sauces (Copia)" in row_text:
-                
-                # 2. Extract the date from this specific row
-                # This regex looks for a pattern like MM/DD/YYYY
+                # Extract the date using Regex
                 date_match = re.search(r'\d{1,2}/\d{1,2}/\d{4}', row_text)
                 found_date = date_match.group(0) if date_match else "Unknown Date"
-                
-                # 3. Check if this is a NEW date
-                if found_date not in KNOWN_DATES:
-                    print(f"New date detected: {found_date}! Sending email...")
-                    send_notification(found_date)
-                    return # Exit after sending one notification to avoid spamming
+                print(f"DEBUG: Found class on {found_date}")
 
-        print("No new dates found.")
+                if found_date not in KNOWN_DATES:
+                    print(f"DEBUG: NEW DATE FOUND: {found_date}. Sending email...")
+                    send_notification(found_date)
+                    return 
+                else:
+                    print(f"DEBUG: Date {found_date} is already in ignore list.")
 
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"CRITICAL ERROR: {e}")
 
 def send_notification(class_date):
     msg = EmailMessage()
@@ -61,12 +61,7 @@ def send_notification(class_date):
     """
     msg.add_alternative(html_content, subtype='html')
 
-    # UPDATED FOR YAHOO:
-    # Yahoo uses port 465 with SSL
     try:
+        print("DEBUG: Connecting to Yahoo SMTP...")
         with smtplib.SMTP_SSL('smtp.mail.yahoo.com', 465) as smtp:
-            smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
-            smtp.send_message(msg)
-        print("Email sent successfully via Yahoo.")
-    except Exception as e:
-        print(f"SMTP Error: {e}")
+            smtp.login(EMAIL_
