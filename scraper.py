@@ -7,7 +7,6 @@ import re
 
 # --- CONFIGURATION ---
 URL = "https://register.culinary.edu/searchResults.cfm?facID=1&sorter=sch.schDateStart&sorter2=c.couTitle"
-# Updated to match your new secret names
 EMAIL_ADDRESS = os.environ.get('EMAIL')
 EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD')
 
@@ -41,9 +40,8 @@ def check_availability():
                     return 
                 else:
                     print(f"DEBUG: Date {found_date} is already in ignore list.")
-
     except Exception as e:
-        print(f"CRITICAL ERROR: {e}")
+        print(f"CRITICAL ERROR in check_availability: {e}")
 
 def send_notification(class_date):
     msg = EmailMessage()
@@ -64,4 +62,13 @@ def send_notification(class_date):
     try:
         print("DEBUG: Connecting to Yahoo SMTP...")
         with smtplib.SMTP_SSL('smtp.mail.yahoo.com', 465) as smtp:
-            smtp.login(EMAIL_
+            smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+            print("DEBUG: Yahoo Login Successful.")
+            smtp.send_message(msg)
+            print("DEBUG: Email sent successfully!")
+    except Exception as e:
+        print(f"DEBUG: SMTP Error: {e}")
+
+# This part is crucial! Ensure it is at the very bottom with no extra spaces
+if __name__ == "__main__":
+    check_availability()
